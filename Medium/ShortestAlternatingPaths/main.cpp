@@ -86,80 +86,89 @@ int sizeListNode(ListNode *head)
 
 // --------------------Snippet-Ends--------------------------------
 
-struct state
-{
-    int node;
-    int len;
-    bool color;
-};
-
 vector<int> shortestAlternatingPaths(int n, vector<vector<int>> &redEdges, vector<vector<int>> &blueEdges)
 {
-    vector<vector<int>> dist(2, vector<int>(n, -1));
-    vector<vector<int>> re(n, vector<int>());
-    vector<vector<int>> be(n, vector<int>());
+    vector<vector<int>> best(2, vector<int>(n, -1));
+    vector<vector<int>> adjBlue(n, vector<int>());
+    vector<vector<int>> adjRed(n, vector<int>());
+
+    best[0][0] = 0;
+    best[1][0] = 0;
 
     for (int i = 0; i < redEdges.size(); i++)
     {
-        re[redEdges[i][0]].push_back(redEdges[i][1]);
+        adjRed[redEdges[i][0]].push_back(redEdges[i][1]);
     }
     for (int i = 0; i < blueEdges.size(); i++)
     {
-        be[blueEdges[i][0]].push_back(blueEdges[i][1]);
+        adjBlue[blueEdges[i][0]].push_back(blueEdges[i][1]);
     }
 
-    queue<state> q;
-    q.push(state{0, 0, false});
-    q.push(state{0, 0, true});
-    dist[0][0] = 0;
-    dist[1][0] = 0;
+    queue<pair<bool, pair<int, int>>> q;
+    q.push({false, {0, 0}});
+    q.push({true, {0, 0}});
 
     while (!q.empty())
     {
-        state cur = q.front();
+        bool prevEdge = q.front().first;
+        int curNode = q.front().second.first;
+        int curDist = q.front().second.second;
         q.pop();
 
-        if (cur.color)
+        if (prevEdge)
         {
-            for (int i = 0; i < re[cur.node].size(); i++)
+            for (int i = 0; i < adjRed[curNode].size(); i++)
             {
-                state next = state{re[cur.node][i], cur.len + 1, !cur.color};
-                if (dist[next.color][next.node] == -1 || dist[next.color][next.node] > next.len)
+                int nextNode = adjRed[curNode][i];
+                int nextDist = curDist + 1;
+                if (best[!prevEdge][nextNode] == -1 || best[!prevEdge][nextNode] > nextDist)
                 {
-                    dist[next.color][next.node] = next.len;
-                    q.push(next);
+                    best[!prevEdge][nextNode] = nextDist;
+                    q.push({!prevEdge, {nextNode, nextDist}});
                 }
             }
         }
         else
         {
-            for (int i = 0; i < be[cur.node].size(); i++)
+            for (int i = 0; i < adjBlue[curNode].size(); i++)
             {
-                state next = state{be[cur.node][i], cur.len + 1, !cur.color};
-                if (dist[next.color][next.node] == -1 || dist[next.color][next.node] > next.len)
+                int nextNode = adjBlue[curNode][i];
+                int nextDist = curDist + 1;
+                if (best[!prevEdge][nextNode] == -1 || best[!prevEdge][nextNode] > nextDist)
                 {
-                    dist[next.color][next.node] = next.len;
-                    q.push(next);
+                    best[!prevEdge][nextNode] = nextDist;
+                    q.push({!prevEdge, {nextNode, nextDist}});
                 }
             }
         }
     }
+
     vector<int> ans;
-    for (int i=0; i<n; i++) {
-        if (dist[0][i] == -1 && dist[1][i] == -1) ans.push_back(-1);
-        else if (dist[0][i] == -1) ans.push_back(dist[1][i]);
-        else if (dist[1][i] == -1) ans.push_back(dist[0][i]);
-        else ans.push_back(min(dist[0][i], dist[1][i]));
+    for (int i = 0; i < n; i++)
+    {
+        if (best[0][i] == -1)
+        {
+            ans.push_back(best[1][i]);
+        }
+        else if (best[1][i] == -1)
+        {
+            ans.push_back(best[0][i]);
+        }
+        else
+        {
+            ans.push_back(min(best[0][i], best[1][i]));
+        }
     }
     return ans;
 }
 
 signed main()
 {
-    vector<vector<int>> redEdges = {{0,1},{1,2},{2,3},{3,4}};
-    vector<vector<int>> blueEdges = {{1,2},{2,3},{3,1}};
+    vector<vector<int>> redEdges = {{0, 1}, {1, 2}, {2, 3}, {3, 4}};
+    vector<vector<int>> blueEdges = {{1, 2}, {2, 3}, {3, 1}};
     vector<int> ans = shortestAlternatingPaths(5, redEdges, blueEdges);
-    for (int &i : ans) {
+    for (int &i : ans)
+    {
         cout << i << " ";
     }
     cout << endl;
