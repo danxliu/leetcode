@@ -85,25 +85,32 @@ int sizeListNode(ListNode *head)
 }
 
 // --------------------Snippet-Ends--------------------------------
-ListNode* deleteMiddle(ListNode* head) {
 
-    if (!head->next) return nullptr;
+int countSymmetricIntegers(int low, int high) {
+    int count = 0;
+    for (int i=low; i<=high; i++) {
+        string s = to_string(i);
+        int len = s.size();
+        if (len % 2 != 0) continue;
 
-    int len = sizeListNode(head);
-
-    ListNode* cur = head;
-    for (int i=0; i<len/2-1; i++) {
-        cur = cur->next;
+        int l = 0, r = 0;
+        for (int j=0; j<len/2; j++) {
+            l += s[j] - '0';
+            r += s[len - j - 1] - '0';
+        }
+        count += (l == r);
     }
-
-    if (cur->next && cur->next->next)
-        cur->next = cur->next->next;
-    else
-        cur->next = nullptr;
-    return head;
+    return count;
 }
 
 signed main()
 {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
 
+    int low = 1, high = 100;
+    cout << countSymmetricIntegers(low, high) << endl;
+
+    return 0;
 }
