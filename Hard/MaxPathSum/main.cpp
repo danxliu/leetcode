@@ -86,31 +86,27 @@ int sizeListNode(ListNode *head)
 
 // --------------------Snippet-Ends--------------------------------
 
-int countSymmetricIntegers(int low, int high) {
-    int count = 0;
-    for (int i=low; i<=high; i++) {
-        string s = to_string(i);
-        int len = s.size();
-        if (len % 2 != 0) continue;
-
-        int l = 0, r = 0;
-        for (int j=0; j<len/2; j++) l{
-            l += s[j] - '0';
-            r += s[len - j - 1] - '0';
-        }
-        count += (l == r);
+int dfs(int &ans, TreeNode* root) {
+    int right = 0;
+    int left = 0;
+    if (root->left) {
+        left = max(dfs(ans, root->left), left);
     }
-    return count;
+    if (root->right) {
+        right = max(dfs(ans, root->right), right);
+    }
+
+    ans = max(ans, left + right + root->val);
+    return max(left + root->val, right + root->val);
+}
+
+int maxPathSum(TreeNode* root) {
+    int ans = INT_MIN;
+    dfs(ans, root);
+    return ans;
 }
 
 signed main()
 {
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
 
-    int low = 1, high = 100;
-    cout << countSymmetricIntegers(low, high) << endl;
-
-    return 0;
 }

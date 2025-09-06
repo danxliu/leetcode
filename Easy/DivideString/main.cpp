@@ -86,31 +86,23 @@ int sizeListNode(ListNode *head)
 
 // --------------------Snippet-Ends--------------------------------
 
-int countSymmetricIntegers(int low, int high) {
-    int count = 0;
-    for (int i=low; i<=high; i++) {
-        string s = to_string(i);
-        int len = s.size();
-        if (len % 2 != 0) continue;
-
-        int l = 0, r = 0;
-        for (int j=0; j<len/2; j++) l{
-            l += s[j] - '0';
-            r += s[len - j - 1] - '0';
-        }
-        count += (l == r);
+vector<string> divideString(string s, int k, char fill)
+{
+    vector<string> ans;
+    int i = 0;
+    for (i = 0; i + k < s.size(); i += k)
+    {
+        ans.push_back(s.substr(i, k));
     }
-    return count;
+    string last = s.substr(i);
+    while (last.size() < k)
+    {
+        last += fill;
+    }
+    ans.push_back(last);
+    return ans;
 }
 
 signed main()
 {
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
-
-    int low = 1, high = 100;
-    cout << countSymmetricIntegers(low, high) << endl;
-
-    return 0;
 }

@@ -42,22 +42,22 @@ public:
 
 // --------------------Snippet-Ends--------------------------------
 
-vector<int> maxSlidingWindow(vector<int> &nums, int k)
-{
+vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+    
+    deque<int> window;
     vector<int> ans;
-    multiset<int> window;
-    // create a window of size k
-    for (int i = 0; i < nums.size(); i++)
-    {
-        if (window.size() >= k)
-        {
-            ans.push_back(*window.rbegin());
-            window.erase(window.find(nums[i - k]));
-        }
-        window.insert(nums[i]);
-    }
-    ans.push_back(*window.rbegin());
 
+    for (int i=0; i<nums.size(); i++) {
+        while(!window.empty() && (nums[window.back()] < nums[i] || window.back() <= i-k)) {
+            window.pop_back();
+        }
+        window.push_back(i);
+        while (window.front() <= i-k) window.pop_front();
+
+        if (i >= k-1) {
+            ans.push_back(nums[window.front()]);
+        }
+    }
     return ans;
 }
 

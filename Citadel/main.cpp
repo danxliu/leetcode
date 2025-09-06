@@ -86,31 +86,9 @@ int sizeListNode(ListNode *head)
 
 // --------------------Snippet-Ends--------------------------------
 
-int countSymmetricIntegers(int low, int high) {
-    int count = 0;
-    for (int i=low; i<=high; i++) {
-        string s = to_string(i);
-        int len = s.size();
-        if (len % 2 != 0) continue;
+int findDuplicate(vector<int>& nums) {
 
-        int l = 0, r = 0;
-        for (int j=0; j<len/2; j++) l{
-            l += s[j] - '0';
-            r += s[len - j - 1] - '0';
-        }
-        count += (l == r);
-    }
-    return count;
 }
 
-signed main()
-{
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
-
-    int low = 1, high = 100;
-    cout << countSymmetricIntegers(low, high) << endl;
-
-    return 0;
+signed main() {
 }

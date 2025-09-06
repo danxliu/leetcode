@@ -86,31 +86,60 @@ int sizeListNode(ListNode *head)
 
 // --------------------Snippet-Ends--------------------------------
 
-int countSymmetricIntegers(int low, int high) {
-    int count = 0;
-    for (int i=low; i<=high; i++) {
-        string s = to_string(i);
-        int len = s.size();
-        if (len % 2 != 0) continue;
+int countPalindromes(string s)
+{
+    int mod = 1e9+7;
+    int n = s.size();
 
-        int l = 0, r = 0;
-        for (int j=0; j<len/2; j++) l{
-            l += s[j] - '0';
-            r += s[len - j - 1] - '0';
+    vector<vector<vector<int>>> left_pair_count(n+1, vector<vector<int>>(10, vector<int>(10, 0)));
+    vector<vector<vector<int>>> right_pair_count(n+1, vector<vector<int>>(10, vector<int>(10, 0)));
+    vector<int> left_count(10, 0);
+    vector<int> right_count(10, 0);
+
+    for (int i=0; i<n; i++) {
+        int cur = s[i] - '0';
+        if (i > 0) {
+            for (int j=0; j<10; j++) {
+                for (int k=0; k<10; k++) {
+                    left_pair_count[i][j][k] = left_pair_count[i-1][j][k];
+                }
+            }
         }
-        count += (l == r);
+        for (int j=0; j<10; j++) {
+            left_pair_count[i][j][cur] += left_count[j];
+        }
+        left_count[cur]++;
     }
-    return count;
+
+    for (int i=n-1; i>=0; i--) {
+        int cur = s[i] - '0';
+        if (i < n-1) {
+            for (int j=0; j<10; j++) {
+                for (int k=0; k<10; k++) {
+                    right_pair_count[i][j][k] = right_pair_count[i+1][j][k];
+                }
+            }
+        }
+        for (int j=0; j<10; j++) {
+            right_pair_count[i][cur][j] += right_count[j];
+        }
+        right_count[cur]++;
+    }
+
+    long long ans = 0;
+
+    for (int i=2; i<n-2; i++) {
+        for (int j=0; j<10; j++) {
+            for (int k=0; k<10; k++) {
+                ans += (1LL * left_pair_count[i-1][j][k] * right_pair_count[i+1][k][j]) % mod;
+                ans %= mod;
+            }
+        }
+    }
+    return ans;
 }
 
 signed main()
 {
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
-
-    int low = 1, high = 100;
-    cout << countSymmetricIntegers(low, high) << endl;
-
-    return 0;
+    cout << countPalindromes("9999900000") << endl;
 }

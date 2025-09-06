@@ -86,31 +86,37 @@ int sizeListNode(ListNode *head)
 
 // --------------------Snippet-Ends--------------------------------
 
-int countSymmetricIntegers(int low, int high) {
-    int count = 0;
-    for (int i=low; i<=high; i++) {
-        string s = to_string(i);
-        int len = s.size();
-        if (len % 2 != 0) continue;
+int countSubstrings(string s)
+{
+    int n = s.size();
+    vector<vector<bool>> dp(n, vector<bool>(n, false));
 
-        int l = 0, r = 0;
-        for (int j=0; j<len/2; j++) l{
-            l += s[j] - '0';
-            r += s[len - j - 1] - '0';
-        }
-        count += (l == r);
+    for (int i=0; i<n; i++) {
+        dp[i][i] = true;
     }
-    return count;
+    for (int i=1; i<n; i++) {
+        dp[i-1][i] = (s[i-1] == s[i]);
+    }
+
+    for (int len = 2; len<n; len++) {
+        for (int l = 0; l<n; l++) {
+            int r = l + len;
+            if (r >= n) continue;
+
+            dp[l][r] = dp[l+1][r-1] && (s[l] == s[r]);
+        }
+    }
+
+    int ans = 0;
+    for (int i=0; i<n; i++) {
+        for (int j=0; j<n; j++) {
+            ans += dp[i][j];
+        }
+    }
+    return ans;
 }
 
 signed main()
 {
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
-
-    int low = 1, high = 100;
-    cout << countSymmetricIntegers(low, high) << endl;
-
-    return 0;
+    cout << countSubstrings("aaa") << endl;
 }

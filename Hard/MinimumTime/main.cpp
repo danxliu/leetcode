@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -86,31 +87,51 @@ int sizeListNode(ListNode *head)
 
 // --------------------Snippet-Ends--------------------------------
 
-int countSymmetricIntegers(int low, int high) {
-    int count = 0;
-    for (int i=low; i<=high; i++) {
-        string s = to_string(i);
-        int len = s.size();
-        if (len % 2 != 0) continue;
-
-        int l = 0, r = 0;
-        for (int j=0; j<len/2; j++) l{
-            l += s[j] - '0';
-            r += s[len - j - 1] - '0';
-        }
-        count += (l == r);
+int minimumTime(int n, vector<vector<int>>& relations, vector<int>& time) {
+    if (n == 1) {
+        return time[0];
     }
-    return count;
+
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq; // (time, index)
+    map<int, vector<int>> parents; // parents[i] represent parents of node i
+    map<int, int> outdegree; // outdegree[i] represents outdegree of node i
+
+    for (vector<int> &i : relations) {
+        int in = i[0];
+        int out = i[1];
+        outdegree[out]++;
+        parents[in].push_back(out);
+    }
+
+    int curtime = 0;
+    // Push all nodes with outdegree 0
+    for (int i=1; i<=n; i++) {
+        if (!outdegree.count(i) || !outdegree[i]) {
+            pq.push({curtime + time[i-1], i});
+        }
+    }
+    while(!pq.empty()) {
+        // Pop from min heap
+        curtime = pq.top().first;
+        int curid = pq.top().second;
+        pq.pop();
+
+        // Subtract outdegree
+        for (int &parent : parents[curid]) {
+            outdegree[parent]--;
+            if (outdegree[parent] == 0) {
+                pq.push({curtime + time[parent-1], parent});
+            }
+        }
+    }
+
+    return curtime;
 }
 
 signed main()
 {
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
+    vector<vector<int>> relations = {{1,3},{2,3}};
+    vector<int> time = {3, 2, 5};
 
-    int low = 1, high = 100;
-    cout << countSymmetricIntegers(low, high) << endl;
-
-    return 0;
+    cout << minimumTime(3, relations, time) << endl;
 }
